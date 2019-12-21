@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+    }
+
+    #div1,
+    #div2 {
+      width: 350px;
+      height: 70px;
+      padding: 10px;
+      border: 1px solid #aaaaaa;
+    }
+
+    .red {
+      background-color: red;
+    }
+
+    .blue {
+      background-color: blue;
+    }
+  </style>
+  <script>
+    let draging = null;
+
+    // Listen for mouseup
+    function mUp(e) {
+      switch (e.button) {
+        case 0: // Primary button ("left")
+          if (draging != null) {
+            console.log(e);
+            drop(e);
+          }
+          break;
+      }
+    }
+
+    // Fire when item is in drag state
+    function drag(ev) {
+      if (ev.target.classList.contains("item") && draging == null) {
+        draging = ev.target.id;
+        ev.target.style.pointerEvents = "none";
+      }
+    }
+
+    // When item is dropped
+    function drop(ev) {
+      console.log(ev)
+      if (draging != null) {
+        let content = document.getElementById(draging);
+        if (ev.target.classList.contains("itemSlot") && ev.target.innerHTML == "") {
+          // place in empty slot
+          ev.target.appendChild(content);
+        } else if (ev.target.classList.contains("item")) {
+          // swamp items
+          let drag = document.getElementById(draging)
+          let dragNodeParent = document.getElementById(draging).parentNode;
+          let targetNodeParent = ev.target.parentNode;
+          let target = document.getElementById(ev.target.id);
+
+          dragNodeParent.appendChild(target);
+          targetNodeParent.appendChild(drag);
+        }
+        draging = null;
+        content.classList.remove("moveit");
+        content.style.position = "static";
+        content.style.pointerEvents = "";
+      }
+    }
+
+    // Used for permantly move object draging
+    function MousePosUpdate(ev) {
+      if (draging != null) {
+        let content = document.getElementById(draging);
+        content.style.position = "absolute";
+        content.style.left = (ev.x + 1) + 'px';
+        content.style.top = (ev.y + 1) + 'px';
+      }
+    }
+  </script>
+</head>
+
+<body onmousemove="MousePosUpdate(event)" onmouseup="mUp(event)">
+
+  <h1>Drag and drop recreated by DjCtavia :)</h1>
+
+  <div id="div1" class="itemSlot"></div>
+  <div id="div2" class="itemSlot"></div>
+  <br>
+  <img id="drag1" class="item red" src="img_logo.gif" onmousedown="drag(event)" width="336" height="69">
+  <img id="drag2" class="item blue" src="img_logo.gif" onmousedown="drag(event)" width="336" height="69">
+
+</body>
+
+</html>
